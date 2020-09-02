@@ -3,29 +3,28 @@ class PigLatinizer
   def piglatinize(to_oink)
     words_to_oink, oinked = to_oink.split(" "), []
 
-    words_to_oink.each do |word|
-      first_two_letters = word.split("").first(2).join.downcase
+    words_to_oink.map do |word|
+      split = word.downcase.split("")
+      letter1, letter2, letter3 = split[0], split[1], split[2]
 
       if word == "spray" || word == "prays"
-        oinked << "ayspray"
-  
-      elsif first_two_letters.split("").first.scan(/[aeoui]/) != []
+          oinked << "ayspray"
+
+      elsif letter1.match?(/^[aeoui]$/)
         oinked << word.concat("way")
-  
-      elsif first_two_letters.scan(/[bcdfghjklmnpqrstvwxyz][aeoui]/) != []
+
+      elsif letter1.match?(/^[bcdfghjklmnpqrstvwxyz]$/) && letter2.match?(/[aeoui]/)
         oinked << reorder(num: 1, word: word)
         
-      elsif first_two_letters.scan(/[bcdfghjklmnpqrstvwxyz]{2}/) != []
-        if word.split("")[2].scan(/[aeoui]/) != [] 
-          oinked << reorder(num: 2, word: word)
-        else
-          oinked << reorder(num: 3, word: word)
-        end
-
+      elsif letter1.match?(/^[bcdfghjklmnpqrstvwxyz]$/) && letter2.match?(/^[bcdfghjklmnpqrstvwxyz]$/) && letter3.match?(/^[aeoui]$/)
+        oinked << reorder(num: 2, word: word)
+        
+      elsif letter1.match?(/^[bcdfghjklmnpqrstvwxyz]$/) && letter2.match?(/^[bcdfghjklmnpqrstvwxyz]$/) && letter3.match?(/^[bcdfghjklmnpqrstvwxyz]$/)
+        oinked << reorder(num: 3, word: word)
+        
       else 
-        "nope"
+        oinked << "| I'm not sure how to piglatinize #{word} |"
       end
-
     end
     oinked.join(" ")
   end
